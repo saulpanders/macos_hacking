@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
 
   char *stack_var ="\xeb\xfe";
 
-  print("[+] Executing shellcode in a stack var..");
+  printf("[+] Executing shellcode in a stack var..");
   f = (funcPtr)stack_var;
   (*f)();
 }
