@@ -1,9 +1,9 @@
 /*
-PoC for testing if the stack  is executable. from Mac Hackers Handbook/craftware.xyz
+PoC for testing if the stack  is executable. Adapted from Mac Hackers Handbook/craftware.xyz
 
 used to use a global var & memcpy from there into main().
 
-Instead using a local stack_var (so its executable)
+Instead using a local stack_var (so its executable!)
 
 */
 
@@ -14,9 +14,13 @@ Instead using a local stack_var (so its executable)
 typedef int (*funcPtr)();
 
 int main(int argc, char *argv[]){
+  
+  //infinite loop shellcode
+  char *stack_var ="\xeb\xfe";
   int(*f)();
 
-  char *stack_var ="\xeb\xfe";
+  printf("[*] Stack Shellcode Addr: 0x%016lx\n", stack_var);
+
 
   printf("[+] Executing shellcode in a stack var..");
   f = (funcPtr)stack_var;
