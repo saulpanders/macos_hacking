@@ -19,10 +19,10 @@ int main(int argc, char *argv[]){
   char *stack_var ="\xeb\xfe";
   int(*f)();
 
-  printf("[*] Stack Shellcode Addr: 0x%016lx\n", stack_var);
+  printf("[*] stack Shellcode Addr: 0x%016lx\n", stack_var);
 
 
-  printf("[+] Executing shellcode in a stack var..");
+  printf("[+] executing shellcode in a stack var..");
   f = (funcPtr)stack_var;
   (*f)();
 }

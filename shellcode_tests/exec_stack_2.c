@@ -1,8 +1,6 @@
 /*
-testing stack execution of shellcode w/ mprotect
+testing stack execution of shellcode w/o mprotect
 
-still works on Monterey!
-https://craftware.xyz/tips/Stack-exec.html
 
 */
 
@@ -33,10 +31,10 @@ int main(int argc, char *argv[]){
     printf("[*] buff start: 0x%016lx\n", (unsigned long) stack_var);
 
     //marking entire memory page RWX
-    ret = mprotect((void *) page_start, page_size, PROT_READ | PROT_WRITE | PROT_EXEC);
-    if(ret<0){
-        perror("[-] mprotect failed");
-    }
+    //ret = mprotect((void *) page_start, page_size, PROT_READ | PROT_WRITE | PROT_EXEC);
+    //if(ret<0){
+      //  perror("[-] mprotect failed");
+    //}
 
     // Copy shellcode on the stack
     memcpy(stack_var, shellcode, sizeof(shellcode));

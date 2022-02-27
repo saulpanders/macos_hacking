@@ -5,11 +5,11 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleIdentifier</key>
-    <string>taskforpid</string>
+    <string>remoteshellcodeinj</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>tfp</string>
+    <string>sti</string>
     <key>CFBundleVersion</key>
     <string>1.0</string>
     <key>SecTaskAccess</key>

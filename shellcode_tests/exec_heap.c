@@ -18,10 +18,10 @@ int main(int argc, char *argv[]){
 
   //declare space for shellcode on heap & check address of buffer
   char * heap_buff= (char *)malloc(2);
-  printf("[*] Heap Shellcode Buff: 0x%016lx\n", (unsigned long)heap_buff);
+  printf("[*] heap Shellcode Buff: 0x%016lx\n", (unsigned long)heap_buff);
 
 
-  //added a useless scanf as a breakpoint - for vmmap
+  //added a useless scanf as a breakpoint - for vmmap debugging
   char* breakpoint;
   scanf(breakpoint);
 
